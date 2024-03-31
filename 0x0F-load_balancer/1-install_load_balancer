@@ -11,14 +11,15 @@ apt-get -y install haproxy
 # edit config file
 server_config=\
 "
-frontend  besthor_frontend
+frontend  bamiyor.tech
         bind *:80
         mode http
-        default_backend besthor_backend
-backend besthor_backend
+        default_backend web_servers
+
+backend web_servers
         balance roundrobin
-        server 176572-web-01 54.165.168.252:80 check
-        server 176572-web-02 34.237.91.136:80 check
+        server 520271-web-01 107.23.105.60:80 check
+        server 520271-web-02 52.3.220.140:80 check
 "
 echo "$server_config" | sudo tee -a /etc/haproxy/haproxy.cfg
 
