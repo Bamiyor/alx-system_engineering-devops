@@ -1,33 +1,15 @@
 #!/usr/bin/python3
-"""script using this REST API, for a given employee ID,
-returns information about his/her TODO list progress."""
+"""Returns to-do list information for a given employee ID."""
 import requests
 import sys
 
-if __name__ == '__main__':
-     # Get the user ID from the command-line arguments provided to the script
-    user_id = sys.argv[1]
-
-     # Base URL for the JSONPlaceholder API
+if __name__ == "__main__":
     url = "https://jsonplaceholder.typicode.com/"
+    user = requests.get(url + "users/{}".format(sys.argv[1])).json()
+    todos = requests.get(url + "todos", params={"userId": sys.argv[1]}).json()
 
-    # Fetch user information from the API and
-    # convert the response to a JSON object
-    user = requests.get(url + "users/{}".format(user_id)).json()
-
-    # Extract the username from the user data
-    username = user.get("username")  # Correct indentation here
-
-    # Fetch the to-do list items associated with the
-    # given user ID and convert the response to a JSON object
-    todos = requests.get(url + "todos", params={"userId": user_id}).json()
-
-    # Use list comprehension to iterate over the to-do list items
-    # Write each item's details (user ID, username, completion status,
-    # and title) as a row in the CSV file
-    with open("{}.csv".format(str(user_id)), "w", newline="") as csvfile:  # Convert user_id to string
-        writer = csv.writer(csvfile, quoting=csv.QUOTE_ALL)
-        [writer.writerow(
-            [user_id, username, t.get("completed"), t.get("title")]
-         ) for t in todos]
+    completed = [t.get("title") for t in todos if t.get("completed") is True]
+    print("Employee {} is done with tasks({}/{}):".format(
+        user.get("name"), len(completed), len(todos)))
+    [print("\t {}".format(c)) for c in completed]
     
